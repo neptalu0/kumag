@@ -564,6 +564,14 @@ class Database {
                 password: dbConfig.password,
                 timezone: "Z",
                 ...(dbConfig.socketPath ? { socketPath: dbConfig.socketPath } : {}),
+                ...(dbConfig.ssl
+                    ? {
+                          ssl: {
+                              rejectUnauthorized: true,
+                              ...(dbConfig.ca && dbConfig.ca.trim() !== "" ? { ca: [dbConfig.ca] } : {}),
+                          },
+                      }
+                    : {}),
             });
             Database.authMariaDB = database;
         } else if (dbConfig.type === "embedded-mariadb") {
