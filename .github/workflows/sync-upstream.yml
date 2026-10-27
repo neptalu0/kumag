@@ -3,7 +3,7 @@ name: Sync Upstream (louislam/uptime-kuma)
 on:
   schedule:
     # Runs every 30 minutes
-    - cron: '*/30 * * * *'
+    - cron: '14,44 * * * *'
   workflow_dispatch:
 
 jobs:
