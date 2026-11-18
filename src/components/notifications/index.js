@@ -43,6 +43,7 @@ import OneBot from "./OneBot.vue";
 import Onesender from "./Onesender.vue";
 import Ooredoo from "./Ooredoo.vue";
 import Opsgenie from "./Opsgenie.vue";
+import OpsiMate from "./OpsiMate.vue";
 import JiraServiceManagement from "./JiraServiceManagement.vue";
 import PagerDuty from "./PagerDuty.vue";
 import FlashDuty from "./FlashDuty.vue";
@@ -77,6 +78,7 @@ import Telegram from "./Telegram.vue";
 import Teltonika from "./Teltonika.vue";
 import Telnyx from "./Telnyx.vue";
 import Threema from "./Threema.vue";
+import Trigv from "./Trigv.vue";
 import Twilio from "./Twilio.vue";
 import Webhook from "./Webhook.vue";
 import WeCom from "./WeCom.vue";
@@ -159,6 +161,7 @@ const NotificationFormList = {
     Onesender: Onesender,
     Ooredoo: Ooredoo,
     Opsgenie: Opsgenie,
+    OpsiMate: OpsiMate,
     JiraServiceManagement: JiraServiceManagement,
     PagerDuty: PagerDuty,
     FlashDuty: FlashDuty,
@@ -193,6 +196,7 @@ const NotificationFormList = {
     Teltonika: Teltonika,
     telnyx: Telnyx,
     threema: Threema,
+    trigv: Trigv,
     twilio: Twilio,
     Splunk: Splunk,
     SpugPush: SpugPush,

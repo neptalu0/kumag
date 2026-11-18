@@ -1,13 +1,7 @@
 let express = require("express");
-const {
-    allowDevAllOrigin,
-    allowAllOrigin,
-    percentageToColor,
-    filterAndJoin,
-    sendHttpError,
-} = require("../util-server");
+const { allowDevAllOrigin, allowAllOrigin, percentageToColor, filterAndJoin, sendHttpError } = require("../util");
 const { R } = require("redbean-node");
-const apicache = require("../modules/apicache");
+const apicache = require("../utils/response-cache");
 const Monitor = require("../model/monitor");
 const dayjs = require("dayjs");
 const { UP, MAINTENANCE, DOWN, PENDING, flipStatus, log, badgeConstants } = require("../../src/util");
@@ -17,6 +11,7 @@ const { emitHeartbeat } = require("../heartbeat-emit");
 const { makeBadge } = require("badge-maker");
 const { Prometheus } = require("../prometheus");
 const { UptimeCalculator } = require("../uptime-calculator");
+const { MonitorStats } = require("../monitor-stats");
 const { Settings } = require("../settings");
 const { requireApiKey, readApiKey } = require("../auth");
 const { getSessionFromHeaders } = require("../better-auth");
@@ -434,6 +429,13 @@ router.all("/api/push/:pushToken", async (request, response) => {
         let endTimeDayjs = await uptimeCalculator.update(bean.status, parseFloat(bean.ping));
         bean.end_time = R.isoDateTimeMillis(endTimeDayjs);
 
+        let liveStats;
+        try {
+            liveStats = await MonitorStats.recordBeat(monitor.id, bean.status);
+        } catch (e) {
+            log.warn("router", `Failed to update dashboard stats: ${e.message}`);
+        }
+
         log.debug("router", `/api/push/ called at ${dayjs().format("YYYY-MM-DD HH:mm:ss.SSS")}`);
         log.debug("router", "PreviousStatus: " + previousHeartbeat?.status);
         log.debug("router", "Current Status: " + bean.status);
@@ -465,7 +467,11 @@ router.all("/api/push/:pushToken", async (request, response) => {
 
         await R.store(bean);
 
-        emitHeartbeat(io, bean.toJSON());
+        const beatJSON = bean.toJSON();
+        if (liveStats) {
+            beatJSON.stats = liveStats;
+        }
+        emitHeartbeat(io, beatJSON);
 
         Monitor.sendStats(io, monitor.id);
 
